@@ -54,6 +54,6 @@ Good review risks: hardcoded budget data, no monthly reset, no tests, deeply uns
 
 ## Suggested Fake GitHub URLs
 
-If you push this to your fake Fireship GitHub repo, use pull request titles above. For the recording, the hero URL should look like:
+For the recording, the hero URL is:
 
-`https://github.com/fireship-io/slopshop/pull/42`
+`https://github.com/fireship-dev/slopshop/pull/1`
