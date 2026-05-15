@@ -13,6 +13,7 @@ This repo intentionally includes a handful of branches that look like pull reque
 - `pr/prompt-replay`
 - `pr/provider-key-vault`
 - `pr/panic-mode`
+- `pr/hallucination-budget`
 
 The hero branch is `pr/fallback-routing`.
 
