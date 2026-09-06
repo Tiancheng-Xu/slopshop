@@ -19,7 +19,7 @@ The hero branch is `pr/fallback-routing`.
 
 ## Product Vibe
 
-- register AI providers and models
+- register AI providers and models (Claude, GPT, Gemini, Groq, plus a local llama)
 - route prompts through a fallback chain
 - track latency, cost, and recent failures
 - inspect failed generations

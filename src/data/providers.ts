@@ -35,6 +35,14 @@ export const providers: Provider[] = [
     costPerMillionTokens: 7,
   },
   {
+    id: "groq",
+    name: "Groq: answers before you finish asking",
+    status: "online",
+    latencyMs: 140,
+    contextWindow: "32k",
+    costPerMillionTokens: 3,
+  },
+  {
     id: "brads-macbook",
     name: "Brad's MacBook: local llama, fan sounds included",
     status: "offline",
