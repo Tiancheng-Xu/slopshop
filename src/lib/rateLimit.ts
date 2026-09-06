@@ -24,19 +24,54 @@ export const DEFAULT_RATE_LIMIT: RateLimitConfig = {
   windowMs: 60_000,
 };
 
-const requestLog: Record<string, number[]> = {};
+type UserRateLog = {
+  timestamps: number[];
+  lastSeenAt: number;
+  windowMs: number;
+};
+
+export const STALE_USER_RATE_LIMIT_WINDOW_MS = 60_000;
+const requestLog = new Map<string, UserRateLog>();
+
+function validateRateLimitConfig(config: RateLimitConfig): void {
+  if (
+    !Number.isFinite(config.maxRequests) ||
+    !Number.isFinite(config.windowMs) ||
+    config.maxRequests <= 0 ||
+    config.windowMs <= 0
+  ) {
+    throw new Error("Rate limit configuration must use positive finite values");
+  }
+}
+
+function cleanupInactiveUsers(now: number): void {
+  for (const [userId, log] of requestLog) {
+    if (now - log.lastSeenAt > Math.max(STALE_USER_RATE_LIMIT_WINDOW_MS, log.windowMs)) {
+      requestLog.delete(userId);
+    }
+  }
+}
 
 export function checkRateLimit(
   userId: string,
   config: RateLimitConfig = DEFAULT_RATE_LIMIT,
 ): RateLimitResult {
-  const now = Date.now();
-  const windowStart = now - config.windowMs;
+  validateRateLimitConfig(config);
 
-  const timestamps = (requestLog[userId] ?? []).filter((ts) => ts > windowStart);
+  const now = Date.now();
+  cleanupInactiveUsers(now);
+
+  const windowStart = now - config.windowMs;
+  const userLog =
+    requestLog.get(userId) ?? { timestamps: [], lastSeenAt: now, windowMs: config.windowMs };
+
+  const timestamps = userLog.timestamps.filter((ts) => ts > windowStart);
+
+  userLog.lastSeenAt = now;
+  userLog.windowMs = Math.max(userLog.windowMs, config.windowMs);
 
   if (timestamps.length >= config.maxRequests) {
-    requestLog[userId] = timestamps;
+    requestLog.set(userId, { ...userLog, timestamps });
     return {
       allowed: false,
       remaining: 0,
@@ -45,7 +80,7 @@ export function checkRateLimit(
   }
 
   timestamps.push(now);
-  requestLog[userId] = timestamps;
+  requestLog.set(userId, { ...userLog, timestamps });
 
   return {
     allowed: true,
@@ -55,7 +90,5 @@ export function checkRateLimit(
 }
 
 export function clearRateLimits(): void {
-  for (const key of Object.keys(requestLog)) {
-    delete requestLog[key];
-  }
+  requestLog.clear();
 }
