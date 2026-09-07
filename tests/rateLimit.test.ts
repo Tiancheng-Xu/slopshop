@@ -50,6 +50,9 @@ describe("checkRateLimit", () => {
     expect(() => checkRateLimit("user-1", { maxRequests: -1, windowMs: 1000 })).toThrow(
       "Rate limit configuration must use positive finite values",
     );
+    expect(() => checkRateLimit("user-1", { maxRequests: 1.5, windowMs: 1000 })).toThrow(
+      "Rate limit configuration must use positive finite values",
+    );
     expect(() => checkRateLimit("user-1", { maxRequests: 1, windowMs: 0 })).toThrow(
       "Rate limit configuration must use positive finite values",
     );

@@ -37,6 +37,7 @@ function validateRateLimitConfig(config: RateLimitConfig): void {
   if (
     !Number.isFinite(config.maxRequests) ||
     !Number.isFinite(config.windowMs) ||
+    !Number.isInteger(config.maxRequests) ||
     config.maxRequests <= 0 ||
     config.windowMs <= 0
   ) {
